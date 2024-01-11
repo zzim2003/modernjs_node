@@ -36,6 +36,7 @@ const app = express();
 //body-parser 라이브러리 추가
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended:true}));
+app.set('view engine','ejs');
 
 // app.listen(8080, function(){
 //     console.log("포트 8080으로 서버 대기중 ... ")
@@ -46,20 +47,11 @@ app.get("/book", function (req, res) {
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
-app.get("/list", function (req, res) {
-  // conn.query("select * from post", function (err, rows, fields) {
-  //   if (err) throw err;
-  //   console.log(rows);
-  // });
-  mydb
-    .collection("post")
-    .find()
-    .toArray()
-    .then((result) => {
-      console.log(result);
-
-    });
-    res.sendFile(__dirname+'/list.html');
+app.get('/list',function(req,res){
+  mydb.collection('post').find().toArray(function(err,result){
+    console.log(result);
+    res.render('list.ejs',{data : reuslt});
+  })
 });
 app.get('/enter',function(req,res){
   res.sendFile(__dirname + '/enter.html');
