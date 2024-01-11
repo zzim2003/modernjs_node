@@ -1,0 +1,811 @@
+아이피. 인터넷에 연결되어있는 모든장치 를 시결할 수 있도록 부여되는 고유주소
+
+포트 . 클라이언트의 요청의 정확한 도착지점설정.
+
+Node.js - > 웹 서버 개발에 최적.
+
+httpServer.js -- > 실습
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+const http = require('http'); --> http 라이브러리를 require 함수를 통해 포함하겠다는 의미. 이 모듈이 잇어야 서버를 만들 수 있다.
+
+const hostname = '127.0.0.1'; 
+const port = 3000; --> 아이피와 포트 변수이다.
+
+const server = http.createServer((req,res)=>{ --> http 모듈로서버를 1대 생성하는 기능이다. 내부에 (req,res) 를 백함수가 등록되어 있는데 클라이언트가 
+    res.ststusCode = 200;                         콜백함수 내부인 7~9 wnfdmf tngod
+    res.setHeader('Content-Type' , 'text/plain');
+    res.end('hello world');
+});
+
+server.listen(port,hostname,()=>{ --> 대기하는 함수로써 서버의 등록한 아이피와 포트 번호를 기반으로 클라이언트가 서버에 접속하기 전까지 대기한다.
+    console.log(`Server running at http://${hostname}:${port}/`);
+});
+
+--> 실행
+[Running] node "d:\coding\Mordern js_node.js\BACKED\coding_study\httpServer.js"
+Server running at http://127.0.0.1:3000/
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+이벤트란 사전적의미로 '사건'을 뜻하며 , 사건을 본질적으로 발생하는 것이다.
+
+이벤트 기반 시스템은 이러한 이벤트를 처리하는 시스템으로 , 마우스를 사용하여 클릭 , 더블클릭 , 드래그 , 무브 등이 윈도우와 같은 시스템을 대표적으로 들 수 있다.
+이러한 이벤트가 발생하면 해당 이벤트에 대한 처리를 위해 이벤트와 연결된 이벤트 리스너가 존재 , 이 이벤트 리스너에 이벤트를 처리할 어떤 동작을 정의할 수 있다.
+처리 루틴을 이벤트 리스너에 그대로 작성하게 되면 코드가 매우 길어지고 가독성도 떨어지므로 이벤트 리스너에 특정 함수를 등록하게 되는데 , 이함수를 콜백 함수라고 부른다
+
+GET 요청 처리 루틴
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+const expess = require('express');
+const app = expess();
+
+app.listen(8080,function(){
+    console.log("포트 8080으로 서버 대기중")
+});
+app.get('/book',function(req,res){ --> get 함수는 두개의 전달인자를 받는다 . 첫번쨰 전달인자는 웹 브라우저에서 요청한 요청url이고 두번째 전달인자는
+                                       요청을 처리하는 콜백함수다.  이 핫무슨ㄴ 반드시 2개의 전달인자를 갖는데 , req 는 request 의 약자로 요청을 의미한다
+                                       웹브라우저에서 요청시으ㅔ 정보들이req에 모두 들어온다. res는 response 의 약자로 응답을 의맣고 서버가 다시 웹브라우저로
+                                       데이터를 전송할떄 사용하는 변수이다.
+    res.send('도서 목록 관련 페이지입니다.');--> res의 send 함수를 사용하여 요청한 웹 브라우저로 '도서 목록 관련페이지입니다.' 라는 메세지를 전송한다.
+})
+app.get('/',function(req,res){
+    res.send('홈입니다.');
+})
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+send 함수의 한계
+---------------------------------------------------------------------------------------------------------------------------------------------------
+const expess = require('express');
+const app = expess();
+
+app.listen(8080,function(){
+    console.log("포트 8080으로 서버 대기중")
+});
+app.get('/book',function(req,res){
+    res.send('도서 목록 관련 페이지입니다.');
+})
+app.get('/',function(req,res){ --> html 형식으로 작성  marquee 는 왼쪽에서 오른쪽으로 흐르게끔 하는 태그이다.
+    res.send(
+        '<html>\
+            <body>\
+                <h1>홈입니다.</h1>\
+                <marquee>이선빈님 반갑습니다.</marquee>\
+            </body>\
+        </html>'
+    );
+})
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+send 함수 내 코드를 살펴보면 가독성이 떨어진다 . 단지 두 줄문장 출력인데도 가독성이 떨어지는데 내용이 더 추가도ㅣ면 코드는 지금보다 훨씬 복잡해질 것이다.
+
+파일 전송 sendFile 함수.
+
+send 함수를 사용하면 요청한 웹 브라우저로 문자열 메세지를 보내게 되는데 내용이 길어질 수록 코드의 가독성이 매우 떨어진다는 단점이 있었다 . 그래서 조금 더 효율적인 방법으로 sendFile 함수를 사용할 수 있다 .
+
+sendFile(보낼 파일 경로)
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Server.js
+
+const expess = require('express');
+const app = expess();
+
+app.listen(8080,function(){
+    console.log("포트 8080으로 서버 대기중")
+});
+app.get('/book',function(req,res){
+    res.send('도서 목록 관련 페이지입니다.');
+})
+app.get('/',function(req,res){
+    res.sendFile(__dirname + '/index.html'); --> __dirname 은 내부에 현재 ㄷㅣ렉토리를 나타내는 문자열 변수로 선언되어 있다 .문자열끼리 + 기호로 함칠 수 있으므로
+});                                              현재 디렉토리에 'index.html' 문자열을 결합하여 요청 웹 브라우저로 보낸다. -> index.html 의 파일을 화면에 나타낸다.
+
+index.html
+
+<!DOCTYPE html>
+<html lang = 'en'>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge; chrome=1">
+        <meta name="viewport" content="width= device-width,inital-scale=1.0">
+        <title>Home</title>
+    </head>
+    <body>
+        <h1>홈입니다.</h1>
+        <marquee>이선빈님 반갑습니다.</marquee>
+    </body>
+</html>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+부트스트랩 적용
+(https://getbootstrap/kr)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  </head>
+  <body>
+    <h1>홈입니다.</h1>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  </body>
+</html>
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+기본적인 부트스트랩의 css
+
+네비게이션바 적용
+---------------------------------------------------------------------------------------------------------------------------------------------------
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">Navbar</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">Link</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+              </li>
+            </ul>
+            <form class="d-flex" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </nav>
+    <h1>홈입니다.</h1>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+Mysql  연동
+---------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sakila             |
+| sys                |
+| world              |
++--------------------+
+6 rows in set (0.01 sec)
+---------------------------------------------------------------------------------------------------------------------------------------------------
+현재 데이터베이스를 조회하는것.
+---------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> use world;
+Database changed
+---------------------------------------------------------------------------------------------------------------------------------------------------
+사용할 데이터베이스를 바꾸는것.
+---------------------------------------------------------------------------------------------------------------------------------------------------
+mysql> show tables;
++-----------------+
+| Tables_in_world |
++-----------------+
+| city            |
+| country         |
+| countrylanguage |
++-----------------+
+3 rows in set (0.01 sec)
+---------------------------------------------------------------------------------------------------------------------------------------------------
+world 의 테이블을 보여주는것 
+
+show databases(데이터베이스를 보여주는것) -> use world(데이터베이스를 선택.) -> show tables(선택한 데이터베이스의 테이블)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+스키마와 테이블 생성
+mysql> CREATE DATABASE myboard default CHARACTER SET UTF8;
+Query OK, 1 row affected, 1 warning (0.02 sec)
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| myboard            |
+| mysql              |
+| performance_schema |
+| sakila             |
+| sys                |
+| world              |
++--------------------+
+7 rows in set (0.00 sec)
+
+-> board 라는 데이터베이스가 추가된것을 볼 수 있다.
+
+mysql> use myboard;
+Database changed
+
+-> myboard 라는 데이터베이스로 바뀐것을 알 수 있다..
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+테이블 생성
+
+mysql> show tables;
+Empty set (0.00 sec)
+
+-> myboard 라는 데이터베이스안에 아무런 테이블이 없는 것을 알수있다..
+
+mysql> CREATE TABLE post(
+    -> id INT(11) NOT NULL AUTO_INCREMENT,
+    -> title VARCHAR(100) NOT NULL,
+    -> content TEXT NULL,
+    -> created DATETIME NOT NULL,
+    -> writer VARCHAR(100) NOT NULL,
+    -> email VARCHAR(100) NULL,
+    -> PRIMARY KEY(id));
+Query OK, 0 rows affected, 1 warning (0.04 sec)
+
+->테이블을 만드는 코드와 테이블이 만들어졋다는 코드
+
+mysql> desc post;
++---------+--------------+------+-----+---------+----------------+
+| Field   | Type         | Null | Key | Default | Extra          |
++---------+--------------+------+-----+---------+----------------+
+| id      | int          | NO   | PRI | NULL    | auto_increment |
+| title   | varchar(100) | NO   |     | NULL    |                |
+| content | text         | YES  |     | NULL    |                |
+| created | datetime     | NO   |     | NULL    |                |
+| writer  | varchar(100) | NO   |     | NULL    |                |
+| email   | varchar(100) | YES  |     | NULL    |                |
++---------+--------------+------+-----+---------+----------------+
+6 rows in set (0.00 sec)
+
+-> desc post;는 테이블(post)의 내용 구성을 보여준다.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+SQL 문과 CRUD
+
+데이터 추가
+
+INSERT INTO 테이블명(필드명) VALUES(입력할 값)
+
+mysql> INSERT INTO post(title, content ,created, writer, email) VALUES ('삶은','계란이다',NOW(),'LEE','lee@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO post(title,content,created,writer,email) VALUES ('위대하다','밥을많이먹어서',NOW(),'lee','lee@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO post(title,content,created,writer,email) VALUES ('나의성격유형','infj',NOW(),'kim','kim@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO post(title,content,created,writer,email) VALUES ('가을바람', '가을은 쓸쓸하다.',NOW(),'park','park@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO post(title,content,created,writer,email) VALUES ('언젠가부터','사람들과 이해관계가 힘들어지는것 같다',NOW(),'lee','lee@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+데이터조회
+
+SELECT 필드명 --- FROM 테이블;
+
+mysql> SELECT * from post; --> *는 필드 전체를 의미한다.
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+| id | title        | content                               | created             | writer | email          |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+|  1 | 삶은         | 계란이다                              | 2023-12-28 14:14:39 | LEE    | lee@naver.com  |
+|  2 | 위대하다     | 밥을많이먹어서                        | 2023-12-28 14:17:33 | lee    | lee@naver.com  |
+|  3 | 나의성격유형 | infj                                  | 2023-12-28 14:20:06 | kim    | kim@naver.com  |
+|  4 | 가을바람     | 가을은 쓸쓸하다.                      | 2023-12-28 14:21:16 | park   | park@naver.com |
+|  5 | 언젠가부터   | 사람들과 이해관계가 힘들어지는것 같다 | 2023-12-28 14:22:08 | lee    | lee@naver.com  |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+5 rows in set (0.00 sec)
+
+mysql> SELECT id,title,content from post;
++----+--------------+---------------------------------------+
+| id | title        | content                               |
++----+--------------+---------------------------------------+
+|  1 | 삶은         | 계란이다                              |
+|  2 | 위대하다     | 밥을많이먹어서                        |
+|  3 | 나의성격유형 | infj                                  |
+|  4 | 가을바람     | 가을은 쓸쓸하다.                      |
+|  5 | 언젠가부터   | 사람들과 이해관계가 힘들어지는것 같다 |
++----+--------------+---------------------------------------+
+5 rows in set (0.00 sec)
+
+--> id와 title, content 를 post 테이블에서 뽑아서 그것들만 출력하는것.
+---------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT 필드명 -- FROM 테이블 WHERE 조건;
+
+mysql> SELECT * FROM post WHERE id>2;
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+| id | title        | content                               | created             | writer | email          |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+|  3 | 나의성격유형 | infj                                  | 2023-12-28 14:20:06 | kim    | kim@naver.com  |
+|  4 | 가을바람     | 가을은 쓸쓸하다.                      | 2023-12-28 14:21:16 | park   | park@naver.com |
+|  5 | 언젠가부터   | 사람들과 이해관계가 힘들어지는것 같다 | 2023-12-28 14:22:08 | lee    | lee@naver.com  |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+3 rows in set (0.00 sec)
+
+--> id 가 2 이상인 id 인 것들을 테이블 post 안의 내용을 출력
+
+mysql> SELECT * FROM post WHERE writer = 'lee';
++----+------------+---------------------------------------+---------------------+--------+---------------+
+| id | title      | content                               | created             | writer | email         |
++----+------------+---------------------------------------+---------------------+--------+---------------+
+|  1 | 삶은       | 계란이다                              | 2023-12-28 14:14:39 | LEE    | lee@naver.com |
+|  2 | 위대하다   | 밥을많이먹어서                        | 2023-12-28 14:17:33 | lee    | lee@naver.com |
+|  5 | 언젠가부터 | 사람들과 이해관계가 힘들어지는것 같다 | 2023-12-28 14:22:08 | lee    | lee@naver.com |
++----+------------+---------------------------------------+---------------------+--------+---------------+
+3 rows in set (0.00 sec)
+
+--> writer 이 'lee'인 사람만 결과에 출력
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+SELECT 필드명 -- FROM 테이블 ORDER BY 필드명;
+mysql> SELECT *FROM post ORDER BY id DESC;
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+| id | title        | content                               | created             | writer | email          |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+|  5 | 언젠가부터   | 사람들과 이해관계가 힘들어지는것 같다 | 2023-12-28 14:22:08 | lee    | lee@naver.com  |
+|  4 | 가을바람     | 가을은 쓸쓸하다.                      | 2023-12-28 14:21:16 | park   | park@naver.com |
+|  3 | 나의성격유형 | infj                                  | 2023-12-28 14:20:06 | kim    | kim@naver.com  |
+|  2 | 위대하다     | 밥을많이먹어서                        | 2023-12-28 14:17:33 | lee    | lee@naver.com  |
+|  1 | 삶은         | 계란이다                              | 2023-12-28 14:14:39 | LEE    | lee@naver.com  |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+5 rows in set (0.00 sec)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+SELECT 필드명 -- FROM 테이블 LIMIT 출력할 데이터 개수;
+
+mysql> SELECT *FROM post LIMIT 2;
++----+----------+----------------+---------------------+--------+---------------+
+| id | title    | content        | created             | writer | email         |
++----+----------+----------------+---------------------+--------+---------------+
+|  1 | 삶은     | 계란이다       | 2023-12-28 14:14:39 | LEE    | lee@naver.com |
+|  2 | 위대하다 | 밥을많이먹어서 | 2023-12-28 14:17:33 | lee    | lee@naver.com |
++----+----------+----------------+---------------------+--------+---------------+
+2 rows in set (0.00 sec)
+
+--> 테이블 post 안에 최대 두개만 출력
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+데이터 수정
+
+UPDATE 테이블명 SET 수정할 필드 = "수정할 내용" WHERE ID = 수정할 데이터 id;
+
+mysql> UPDATE post SET content = '성격파탄자' WHERE id = 3;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT * FROM post;
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+| id | title        | content                               | created             | writer | email          |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+|  1 | 삶은         | 계란이다                              | 2023-12-28 14:14:39 | LEE    | lee@naver.com  |
+|  2 | 위대하다     | 밥을많이먹어서                        | 2023-12-28 14:17:33 | lee    | lee@naver.com  |
+|  3 | 나의성격유형 | 성격파탄자                            | 2023-12-28 14:20:06 | kim    | kim@naver.com  |
+|  4 | 가을바람     | 가을은 쓸쓸하다.                      | 2023-12-28 14:21:16 | park   | park@naver.com |
+|  5 | 언젠가부터   | 사람들과 이해관계가 힘들어지는것 같다   | 2023-12-28 14:22:08 | lee    | lee@naver.com  |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+5 rows in set (0.00 sec)
+
+--> infj 가 성격파탄자로 변한것을 알수있다. (id=3)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+데이터 삭제
+
+DELETE FROM 테이블명 WHERE id = 수정할 데이터의 id;
+
+mysql> DELETE FROM post WHERE id=2;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> SELECT *FROM post;
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+| id | title        | content                               | created             | writer | email          |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+|  1 | 삶은         | 계란이다                              | 2023-12-28 14:14:39 | LEE    | lee@naver.com  |
+|  3 | 나의성격유형 | 성격파탄자                            | 2023-12-28 14:20:06 | kim    | kim@naver.com  |
+|  4 | 가을바람     | 가을은 쓸쓸하다.                      | 2023-12-28 14:21:16 | park   | park@naver.com |
+|  5 | 언젠가부터   | 사람들과 이해관계가 힘들어지는것 같다 | 2023-12-28 14:22:08 | lee    | lee@naver.com  |
++----+--------------+---------------------------------------+---------------------+--------+----------------+
+4 rows in set (0.00 sec)
+
+--> id=2가 삭제된것을 알수있다.
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+테이블 분리 및 조인
+---------------------------------------------------------------------------------------------------------------------------------------------------
+테이블 분리
+
+mysql> show tables;
++-------------------+
+| Tables_in_myboard |
++-------------------+
+| post              |
++-------------------+
+1 row in set (0.00 sec)
+
+mysql> rename table post to post_bk;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> show tables;
++-------------------+
+| Tables_in_myboard |
++-------------------+
+| post_bk           |
++-------------------+
+1 row in set (0.00 sec)
+
+--> renmae table post to post_bk; -- 테이블 post 를 post_bk 로 수정
+
+mysql> CREATE TABLE post(
+    -> id INT(11) NOT NULL AUTO_INCREMENT,
+    -> title VARCHAR(30) NOT NULL,
+    -> content TEXT,
+    -> created DATETIME NOT NULL,
+    -> profile_id INT(11) DEFAULT NULL,
+    -> PRIMARY KEY(id));
+Query OK, 0 rows affected, 2 warnings (0.03 sec)
+
+-> 포스트 테이블을 하나 더 만들어 준다.
+
+mysql> CREATE TABLE profile(
+    -> id INT(11) NOT NULL AUTO_INCREMENT,
+    -> writer VARCHAR(30) NOT NULL,
+    -> email VARCHAR(100) DEFAULT NULL,
+    -> PRIMARY KEY(id));
+Query OK, 0 rows affected, 1 warning (0.03 sec)
+
+
+-> profile 테이블을 하나 더 만들어준다.
+
+--2023-12-28 -p358 --
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+mysql> INSERT INTO profile (id,writer,email) VALUES (1,'lee','lee@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO profile (id,writer,email) VALUES (2,'kim','kim@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO profile( id,writer,email) VALUES (3,'park','park@naver.com');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO post(title,content,created,profile_id) VALUES ('삶은','계란이다',NOW(),1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO post(title, content, created , profile_id) VALUES ('위대하다','밥을 많이먹어서',NOW(),1);
+Query OK, 1 row affected (0.01 sec)
+
+mysql> INSERT INTO post(title, content ,created , profile_id) VALUES ('나의 성격유형','INFJ',NOW(),1);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> INSERT INTO post(title,content , created , profile_id) VALUES ('가을바람', ' 가을은 쓸쓸하다.',NOW(),3);
+Query OK, 1 row affected (0.02 sec)
+
+mysql> INSERT INTO post(title, content , created , profile_id) VALUES ('언젠가부터','사람들과 이해관계가 힘들어지는것같 다.',NOW(),1);
+Query OK, 1 row affected (0.01 sec)
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+테이블 조인
+
+SELECT 필드명 FROM 테이블1 LEFT JOIN 테이블 2 on 테이블 1.profile_id = 테이블2.id;
+
+mysql> UPDATE profile SET email = 'lee@daum.net' WHERE id = 1;
+Query OK, 1 row affected (0.01 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+mysql> SELECT *FROM post LEFT JOIN profile on post.profile_id = profile.id;
++----+---------------+---------------------------------------+---------------------+------------+------+--------+----------------+
+| id | title         | content                               | created             | profile_id | id   | writer | email          |
++----+---------------+---------------------------------------+---------------------+------------+------+--------+----------------+
+|  1 | 삶은          | 계란이다                              | 2024-01-02 09:54:02 |          1 |    1 | lee    | lee@daum.net   |
+|  2 | 위대하다      | 밥을 많이먹어서                       | 2024-01-02 09:54:28 |          1 |    1 | lee    | lee@daum.net   |
+|  3 | 나의 성격유형 | INFJ                                  | 2024-01-02 09:55:03 |          1 |    1 | lee    | lee@daum.net   |
+|  4 | 가을바람      |  가을은 쓸쓸하다.                     | 2024-01-02 09:55:48 |          3 |    3 | park   | park@naver.com |
+|  5 | 언젠가부터    | 사람들과 이해관계가 힘들어지는것같다. | 2024-01-02 09:56:28 |          1 |    1 | lee    | lee@daum.net   |
++----+---------------+---------------------------------------+---------------------+------------+------+--------+----------------+
+5 rows in set (0.01 sec)
+
+mysql> SELECT Id,title,content,created ,writer , email FROM post LEFT JOIN profile on post.profile_id = profile.id;
+ERROR 1052 (23000): Column 'Id' in field list is ambiguous
+
+-> 두 테이블에 id라는 필드가 모두 존재하기 때문에 어떤 id필드를 읽어야할지 모호하다는 오류
+
+mysql> SELECT post.id , title, content , created, writer , email FROM post LEFT JOIN profile on post.profile_id = profile.id;
++----+---------------+---------------------------------------+---------------------+--------+----------------+
+| id | title         | content                               | created             | writer | email          |
++----+---------------+---------------------------------------+---------------------+--------+----------------+
+|  1 | 삶은          | 계란이다                              | 2024-01-02 09:54:02 | lee    | lee@daum.net   |
+|  2 | 위대하다      | 밥을 많이먹어서                       | 2024-01-02 09:54:28 | lee    | lee@daum.net   |
+|  3 | 나의 성격유형 | INFJ                                  | 2024-01-02 09:55:03 | lee    | lee@daum.net   |
+|  4 | 가을바람      |  가을은 쓸쓸하다.                     | 2024-01-02 09:55:48 | park   | park@naver.com |
+|  5 | 언젠가부터    | 사람들과 이해관계가 힘들어지는것같다. | 2024-01-02 09:56:28 | lee    | lee@daum.net   |
++----+---------------+---------------------------------------+---------------------+--------+----------------+
+5 rows in set (0.00 sec)
+
+
+p372
+---------------------------------------------------------------------------------------------------------------------------------------------------
+node_mysql 설치
+-> 터미널 npm install --save node-mysql
+
+Node.js와 MYSQL연동 코드 작성
+
+var mysql = require("mysql"); --> mysql 라이브러리를 포함시켜 mysql 객체를 선언하였다.
+var conn = mysql.createConnection({ -->mysql 접속을 위한 필 수 정보들을 입력한다.
+    host : "localhost",
+    user : "root",
+    password : "yesh23156^",
+    database : "myboard",
+});
+
+const expess = require('express');
+const app = expess();
+
+app.listen(8080,function(){
+    console.log("포트 8080으로 서버 대기중")
+});
+app.get('/book',function(req,res){
+    res.send('도서 목록 관련 페이지입니다.');
+})
+app.get('/',function(req,res){
+    res.sendFile(__dirname + '/index.html');
+});
+
+Error: ER_NOT_SUPPORTED_AUTH_MODE: Client does not support authentication protocol requested by server; consider upgrading MySQL client
+    at Sequence._packetToError (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\sequences\Sequence.js:47:14)
+    at Handshake.ErrorPacket (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\sequences\Handshake.js:123:18)
+    at Protocol._parsePacket (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Parser.js:43:10)
+    at Protocol.write (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Protocol.js:38:16)
+    at Socket.<anonymous> (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\Connection.js:88:28)
+    at Socket.<anonymous> (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\Connection.js:526:10)
+    at Socket.emit (node:events:514:28)
+    at addChunk (node:internal/streams/readable:545:12)
+    --------------------
+    at Protocol._enqueue (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Protocol.js:144:48)
+    at Protocol.handshake (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Protocol.js:51:23)
+    at Connection.connect (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\Connection.js:116:18)
+    at Object.<anonymous> (d:\coding\Mordern js_node.js\BACKED\coding_study\Server.js:9:6)
+    at Module._compile (node:internal/modules/cjs/loader:1376:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1435:10)
+    at Module.load (node:internal/modules/cjs/loader:1207:32)
+    at Module._load (node:internal/modules/cjs/loader:1023:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:135:12)
+    at node:internal/main/run_main_module:28:49
+Emitted 'error' event on Connection instance at:
+    at Connection._handleProtocolError (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\Connection.js:423:8)
+    at Protocol.emit (node:events:514:28)
+    at Protocol._delegateError (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Protocol.js:398:10)
+    at Handshake.<anonymous> (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Protocol.js:153:12)
+    at Handshake.emit (node:events:514:28)
+    at Sequence.end (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\sequences\Sequence.js:78:12)
+    at Handshake.ErrorPacket (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\sequences\Handshake.js:125:8)
+    at Protocol._parsePacket (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Protocol.js:291:23)
+    at Parser._parsePacket (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Parser.js:433:10)
+    at Parser.write (d:\coding\Mordern js_node.js\BACKED\coding_study\node_modules\mysql\lib\protocol\Parser.js:43:10) {
+  code: 'ER_NOT_SUPPORTED_AUTH_MODE',
+  errno: 1251,
+  sqlMessage: 'Client does not support authentication protocol requested by server; consider upgrading MySQL client',
+  sqlState: '08004',
+  fatal: true
+}
+
+Node.js v20.10.0
+---------------------------------------------------------------------------------------------------------------------------------------------------
+--> 오류 발생
+
+클라이언트 프로그램에서 mysql 패스워드 플러그인 ' caching_sha2_password"을 소화하지 못해서 생기는 오류
+
+클라이언트 프로그램에서 사용할 수 있도록 유저의 패스워드 Plusin 을 바꿔준다..
+
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '==패스워드 비밀번호==';
+---------------------------------------------------------------------------------------------------------------------------------------------------
+query("요청쿼리문",콜백함수)
+
+첫번째 전달인자에는 DB에 요청할 SQL쿼리문을 입력하고 , 두번째 전달인자에는 요청에 대한 성공 또는 오류를 처리하는 콜백함수를 정의
+
+var mysql = require("mysql");
+var conn = mysql.createConnection({
+    host : "localhost",
+    user : "root",
+    password : "yesh23156^",
+    database : "myboard",
+});
+
+conn.connect(); 
+
+conn.query("select * from post",function (err, rows, fields) { --> select 문을 통해 post 테이블의 모든 데이터를 요청, 요청에 대한 결과를 콜백함수의 전달인자로 받고있다.
+    if (err) throw err;   -> err이 유효하다면 오류 발생              첫번째 전달인자 err 는 오류가 났을 때 오류코드가 날라오고, 두 번쨰 전달인자인 rows 는 레코드 단위의 모든데이터
+    console.log(rows);                                             세번째 전달ㅇ니자인 files 는 테이블의 필드 정보가 들어온다.   
+});
+
+const expess = require('express');
+const app = expess();
+
+app.listen(8080,function(){
+    console.log("포트 8080으로 서버 대기중")
+});
+app.get('/book',function(req,res){
+    res.send('도서 목록 관련 페이지입니다.');
+})
+app.get('/',function(req,res){
+    res.sendFile(__dirname + '/index.html');
+});
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+출력 :
+포트 8080으로 서버 대기중
+[
+  RowDataPacket {
+    id: 1,
+    title: '삶은',
+    content: '계란이다',
+    created: 2024-01-02T00:54:02.000Z,
+    profile_id: 1
+  },
+  RowDataPacket {
+    id: 2,
+    title: '위대하다',
+    content: '밥을 많이먹어서',
+    created: 2024-01-02T00:54:28.000Z,
+    profile_id: 1
+  },
+  RowDataPacket {
+    id: 3,
+    title: '나의 성격유형',
+    content: 'INFJ',
+    created: 2024-01-02T00:55:03.000Z,
+    profile_id: 1
+  },
+  RowDataPacket {
+    id: 4,
+    title: '가을바람',
+    content: ' 가을은 쓸쓸하다.',
+    created: 2024-01-02T00:55:48.000Z,
+    profile_id: 3
+  },
+  RowDataPacket {
+    id: 5,
+    title: '언젠가부터',
+    content: '사람들과 이해관계가 힘들어지는것같다.',
+    created: 2024-01-02T00:56:28.000Z,
+    profile_id: 1
+  }
+]
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+/list 요청시 데이터 조회
+
+매번 post 테아블을 조회하는 것이 아니라 , 조회에 대한 요청이 있을때만 데이터를 조회하면 좋겠다.
+
+var mysql = require("mysql");
+var conn = mysql.createConnection({
+    host : "localhost",
+    user : "root",
+    password : "yesh23156^",
+    database : "myboard",
+});
+
+conn.connect(); 
+
+conn.query("select * from post",function (err, rows, fields) {
+    if (err) throw err;
+    console.log(rows);
+});
+
+const expess = require('express');
+const app = expess();
+
+app.listen(8080,function(){
+    console.log("포트 8080으로 서버 대기중")
+});
+app.get('/book',function(req,res){
+    res.send('도서 목록 관련 페이지입니다.');
+})
+app.get('/',function(req,res){
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/list',function(req,res){
+    console.log('데이터베이스를 조회합니다.');
+});
+
+--> localhost:8080/list 주소창
+
+--> 데이터베이스를 조회한다는 출력 확인 
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+var mysql = require("mysql");
+var conn = mysql.createConnection({
+    host : "localhost",
+    user : "root",
+    password : "yesh23156^",
+    database : "myboard",
+});
+
+conn.connect(); 
+
+const expess = require('express');
+const app = expess();
+
+app.listen(8080,function(){
+    console.log("포트 8080으로 서버 대기중")
+});
+app.get('/book',function(req,res){
+    res.send('도서 목록 관련 페이지입니다.');
+})
+app.get('/',function(req,res){
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/list',function(req,res){
+    conn.query("select * from post",function (err, rows, fields) {
+        if (err) throw err;
+        console.log(rows);
+    });
+});
+
+
+-> 실행할때마다 출력되는것이 아닌 localhost:8080/list 일때마다 post에서 받아온다.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+몽고 DB Aylas 사용
+
+몽고 DB 란 document 지향 데이터 모델을 사용하는 데이터베이스다. 도큐먼트 지향이라는 말은 xml 또는 json 같은 형식의 데이터를 저장하는 것을 말한다..
+몽고 DB 는 {key : values} 형식의오브젝트 형식인 JSON 형태로 데이터를 저장한다.
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+데이터베이스와 컬렉션 생성
+
+<browser collection> -> <add my own data> -> Database name => 'myboard' , collection name =>'post' -> <Create>
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+추가 데이터베이스와 컬렉션 생성
+
+<Create database> -> <Create> 
+
+컬렉션만 추가하고 싶다면 
+
+myboard 옆 (+) => collection name만 추가
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+데이터 추가
+<INSERT DOCUMENT> -> 
