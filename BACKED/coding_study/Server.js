@@ -1,4 +1,5 @@
 const mongoclient = require("mongodb").MongoClient;
+const ObjId = require('mongodb').ObjectId;
 const url =
   "mongodb+srv://zzim2003:yesh23156^@cluster0.tcmrsy2.mongodb.net/?retryWrites=true&w=majority";
 
@@ -7,8 +8,8 @@ mongoclient
   .connect(url)
   .then((client) => {
     mydb = client.db("myboard");
-    // mydb.collection('post').find().toArray().then(result =>{
-    //     console.log(result);
+    //mydb.collection('post').find().toArray().then(result =>{
+    //    console.log(result);
     // })
 
     app.listen(8080, function () {
@@ -36,7 +37,8 @@ const app = express();
 //body-parser 라이브러리 추가
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended:true}));
-app.set('view engine','ejs');
+app.set('view engine', 'ejs');
+
 
 // app.listen(8080, function(){
 //     console.log("포트 8080으로 서버 대기중 ... ")
@@ -47,11 +49,11 @@ app.get("/book", function (req, res) {
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
-app.get('/list',function(req,res){
-  mydb.collection('post').find().toArray(function(err,result){
+app.get('/list',function(req, res) {
+  mydb.collection('post').find().toArray().then(result => {
     console.log(result);
-    res.render('list.ejs',{data : reuslt});
-  })
+    res.render('list.ejs',{ data : result });
+    })
 });
 app.get('/enter',function(req,res){
   res.sendFile(__dirname + '/enter.html');
@@ -76,4 +78,4 @@ app.post('/save',function(req,res){
     console.log('데이터 추가성공');
   });
   res.send('데이터 추가성공');*/
-})
+})       
