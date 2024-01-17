@@ -51,20 +51,20 @@ app.get("/", function (req, res) {
 });
 app.get('/list',function(req, res) {
   mydb.collection('post').find().toArray().then(result => {
-    console.log(result);
+    //console.log(result);
     res.render('list.ejs',{ data : result });
     })
 });
 app.get('/enter',function(req,res){
-  res.sendFile(__dirname + '/enter.html');
+  res.render('enter.ejs')
 });
 
 app.post('/save',function(req,res){
   console.log(req.body.title);
   console.log(req.body.content);
-  //몽고DB
+  console.log(req.body.someDate);  //몽고DB
   mydb.collection('post').insertOne(
-    {title : req.body.title , content:req.body.content}
+    {title : req.body.title , content:req.body.content , date : req.body.someDate}
   ).then(result => {
     console.log(result);
     console.log('데이터 추가 성공');
@@ -79,3 +79,20 @@ app.post('/save',function(req,res){
   });
   res.send('데이터 추가성공');*/
 })     
+
+
+app.post("/delete",function(req,res){
+  console.log(req.body._id);
+  req.body._id = new ObjId(req.body._id);
+  mydb.collection('post').deleteOne(req.body)
+  .then(result => {
+    console.log('삭제완료');
+    res.status(200).send();
+  })
+  .catch(err =>{
+    console.log(err);
+    res.status(500).send();
+  });
+});
+
+
