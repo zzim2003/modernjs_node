@@ -95,4 +95,9 @@ app.post("/delete",function(req,res){
   });
 });
 
+//'/content'요청에 대한 처리 루틴
+app.get('/content/:id',function(req,res){
+  console.log(req.params.id);
+  res.render('content.ejs');
+});
 
