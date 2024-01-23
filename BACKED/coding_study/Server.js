@@ -112,3 +112,18 @@ app.get("/edit/:id",function(req,res){
     res.render("edit.ejs", {data : result});
   })
 });
+
+app.post("/edit",function(req,res){
+  console.log(req.body);
+  req.body.id = new ObjId(req.body.id);
+  mydb.collection("post").updateOne({_id : req.body.id} ,
+     {$set : {title : req.body.title,
+     content : req.body.content,
+      date : req.body.someDate}})
+  .then((result) => {
+    console.log("수정완료");
+    res.redirect('/list');
+  }).catch((err) => {
+    console.log(err);
+  });
+});

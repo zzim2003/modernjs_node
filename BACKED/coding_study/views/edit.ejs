@@ -44,9 +44,10 @@
         </div>
       </nav>
     <div class = "container mt-4">
-        <form action="/save" method ="post">
+        <form action="/edit" method ="post">
             <div class="form-group">
                 <label>제목</label>
+                <input type ="text" value = "<%= data._id %>" name = "id" style = "display:none;"> 
                 <input type = "text" value = "<%= data.title %>"name = "title" class="form-control">
             </div>
             <p></p>
