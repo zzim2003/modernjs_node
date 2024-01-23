@@ -105,3 +105,10 @@ app.get('/content/:id',function(req,res){
   });
 });
 
+app.get("/edit/:id",function(req,res){
+  req.params.id = new ObjId(req.params.id);
+  mydb.collection("post").findOne({_id:req.params.id}).then((result) => {
+    console.log(result);
+    res.render("edit.ejs", {data : result});
+  })
+});
