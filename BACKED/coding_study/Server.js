@@ -39,6 +39,9 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended:true}));
 app.set('view engine', 'ejs');
 
+//정적 파일 라이브러리 추가
+app.use(express.static("public"));
+
 
 // app.listen(8080, function(){
 //     console.log("포트 8080으로 서버 대기중 ... ")
@@ -46,9 +49,9 @@ app.set('view engine', 'ejs');
 app.get("/book", function (req, res) {
   res.send("도서 목록 관련 페이지입니다.");
 });
-app.get("/", function (req, res) {
+/*app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
-});
+});*/
 app.get('/list',function(req, res) {
   mydb.collection('post').find().toArray().then(result => {
     //console.log(result);
@@ -60,16 +63,17 @@ app.get('/enter',function(req,res){
 });
 
 app.post('/save',function(req,res){
-  console.log(req.body.title);
+  /*console.log(req.body.title);
   console.log(req.body.content);
-  console.log(req.body.someDate);  //몽고DB
+  console.log(req.body.someDate);  //몽고DB*/
   mydb.collection('post').insertOne(
     {title : req.body.title , content:req.body.content , date : req.body.someDate}
   ).then(result => {
     console.log(result);
     console.log('데이터 추가 성공');
-  })
-  
+  });
+  res.redirect("/list")
+});   
 //mySQL DB에 데이터 저장하기
 /*  let sql = "insert into post (title,content,created) value(?,?,NOW())";
   let params = [req.body.title,req.body.content];
@@ -78,7 +82,7 @@ app.post('/save',function(req,res){
     console.log('데이터 추가성공');
   });
   res.send('데이터 추가성공');*/
-})     
+  
 
 
 app.post("/delete",function(req,res){
@@ -126,4 +130,8 @@ app.post("/edit",function(req,res){
   }).catch((err) => {
     console.log(err);
   });
+});
+
+app.get("/",function(req, res){
+  res.render("index.ejs");
 });
