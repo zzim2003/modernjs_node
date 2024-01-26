@@ -135,3 +135,11 @@ app.post("/edit",function(req,res){
 app.get("/",function(req, res){
   res.render("index.ejs");
 });
+
+let cookieParser = require('cookie-parser');
+
+app.use(cookieParser());
+app.get('/cookie',function(req,res){
+  res.cookie('milk','1000원');
+  res.send('product: '+req.cookies.milk);
+});
