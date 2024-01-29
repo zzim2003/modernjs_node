@@ -138,8 +138,44 @@ app.get("/",function(req, res){
 
 let cookieParser = require('cookie-parser');
 
-app.use(cookieParser());
-app.get('/cookie',function(req,res){
+app.use(cookieParser('bnjknkrf923dk'));
+/*app.get('/cookie',function(req,res){
   res.cookie('milk','1000원');
   res.send('product: '+req.cookies.milk);
+});*/
+
+app.get("/cookie",function(req, res){
+  let milk = parseInt(req.signedCookies.milk) + 1000;
+  if(isNaN(milk)){
+    milk = 0;
+  }
+  res.cookie("milk",milk,{signed : true});
+  res.send("product :"+milk+"원");
+
 });
+
+let session = require('express-session')
+app.use(session({
+  secret : 'a4tofg284u8dj2j29',
+  resave : false,
+  saveUninitalized : true
+}))
+
+app.get("/session",function(req,res){
+  if(isNaN(req.session.milk)){
+    req.session.milk = 0;
+  }
+  req.session.milk = req.session.milk + 1000; 
+  res.send("session : " + req.session.milk+"원");
+});
+
+app.get("/login",function(req,res){
+  console.log("로그인 페이지");
+  res.render("login.ejs")
+})
+
+app.post("/login",function(req,res){
+  console.log("아이디 : " +  req.body.userid);
+  console.log("비밀번호 : " + req.body.userpw);
+  res.send('로그인 되었습니다.');
+})
