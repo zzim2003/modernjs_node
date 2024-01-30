@@ -34,6 +34,15 @@ conn.connect();
 const express = require("express");
 const app = express();
 
+let session = require('express-session')
+app.use(session({
+  secret : 'a4tofg284u8dj2j29',
+  resave : false,
+  saveUninitalized : true
+}))
+
+
+
 //body-parser 라이브러리 추가
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended:true}));
@@ -154,12 +163,6 @@ app.get("/cookie",function(req, res){
 
 });
 
-let session = require('express-session')
-app.use(session({
-  secret : 'a4tofg284u8dj2j29',
-  resave : false,
-  saveUninitalized : true
-}))
 
 app.get("/session",function(req,res){
   if(isNaN(req.session.milk)){
@@ -170,12 +173,30 @@ app.get("/session",function(req,res){
 });
 
 app.get("/login",function(req,res){
-  console.log("로그인 페이지");
+  console.log(req.session);
+  if(req.session.user){
+    console.log("세션유지");
+    res.render('index.ejs',{ user : req.session.user });
+  }else{
   res.render("login.ejs")
-})
+}})
 
 app.post("/login",function(req,res){
   console.log("아이디 : " +  req.body.userid);
   console.log("비밀번호 : " + req.body.userpw);
-  res.send('로그인 되었습니다.');
-})
+  mydb.collection("account").findOne({userid : req.body.userid}).then((result)=> {
+    if(result.userpw == req.body.userpw){
+      req.session.user = req.body;
+      console.log('새로운 로그인');
+      res.render('index.ejs',{ user : req.session.user})
+    }else{
+      res.render('login.ejs')
+    }
+  });
+});
+
+app.get("/logout",function(req,res){
+  console.log("로그아웃");
+  req.session.destroy();
+  res.render('index.ejs',{ user : null });
+});
